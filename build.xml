@@ -1,0 +1,91 @@
+<project name="Security Report" default="usage">
+	<import file="build.xml" />
+	<path id="dc-tasks-path">
+		<pathelement path="../dcAntTasks.jar" />
+		<pathelement path="${teamserver-ant-tasks.classpath}" />
+	</path>
+
+	<target name="usage">
+		<echo message="" />
+		<echo message="Build file to use Decision Server ant tasks." />
+		<echo message="It provides an entry point to extended function" />
+		<echo message="" />
+	    <echo message="security-report:"/>
+	    <echo message="  Generates an XML report of the security applied to all branches"/>
+	    <echo message="  for every project in the repository."/>
+	    <echo message=""/>
+	    <echo message="deploy-ruleapp:"/>
+	    <echo message="  Generates and deploy a ruleapp to the RES specified.Use the following arguments:"/>
+	    <echo message="  -DresUrl=xxx  the URL of the RES destination"/>
+    	<echo message="  -DresUser=xxx the user to deploy to RES"/>
+		<echo message="  -DresPwd=xxx   the password of this user"/>
+		<echo message="  -Druleapp=xxx the name of the ruleapp"/>
+	    <echo message="Option:"/>
+	    <echo message="  -Dbaseline=xxx : to create a baseline, default no baseline"/>
+		<echo message="  -Dpolicy=xxx : to specify the insertion policy,defaut MAJOR_RULEAPP"/>
+		<echo message="  Possible values MAJOR_RULESET, MINOR_RULESET, MAJOR_RULEAPP, MINOR_RULEAPP, REPLACE_RULESET, REPLACE_RULEAPP"/>
+	    <echo message=""/>
+	    <echo message="redeploy-ruleapp:"/>
+	    <echo message="  Generates and deploy a ruleapp to the RES specified.Use the following arguments:"/>
+	    <echo message="  -DresUrl=xxx  the URL of the RES destination"/>
+    	<echo message="  -DresUser=xxx the user to deploy to RES"/>
+		<echo message="  -DresPwd=xxx   the password of this user"/>
+		<echo message="  -Druleapp=xxx the name of the ruleapp"/>
+	    <echo message="  -Dbaseline=xxx : the baseline to redeploy"/>
+	    <echo message="Option:"/>
+		<echo message="  -Dpolicy=xxx : to specify the insertion policy, defaut MAJOR_RULEAPP"/>
+		<echo message="  Possible values MAJOR_RULESET, MINOR_RULESET, MAJOR_RULEAPP, MINOR_RULEAPP, REPLACE_RULESET, REPLACE_RULEAPP"/>
+	    <echo message="extract-ruleapp:"/>
+	    <echo message="  Generates a ruleapp file ruleappname-&lt;major&gt;.&lt;minor&gt;-yyyymmaa(x).jar or ruleappname-&lt;major&gt;.&lt;minor&gt;-baseline(x).jar .Use the following arguments:"/>
+		<echo message="  -Druleapp=xxx the name of the ruleapp"/>
+	    <echo message="Option:"/>
+	    <echo message="  -Dbaseline=xxx : to create a baseline, no default"/>
+	    <echo message="  -DfromBaseline=xxx : to extract from the baseline, no default"/>
+	    <echo message=""/>
+	    <echo message=""/>
+
+	</target>
+	<taskdef name="securityReport" classname="decisioncenter.SecurityReportTask" classpathref="dc-tasks-path" />
+
+	<taskdef name="ruleappDeploy" classname="decisioncenter.RuleAppDeployerTask" classpathref="dc-tasks-path" />
+
+	<taskdef name="ruleappExtract" classname="decisioncenter.RuleAppExtractorTask" classpathref="dc-tasks-path" />
+
+	<target name="security-report">
+		<securityReport server="${server.url}" datasource="${datasourceName}" user="${rtsAdmin.login}" password="${rtsAdmin.password}" />
+	</target>
+
+	<!-- no value by default -->
+	<property name="baseline" value=""/>
+	<property name="fromBaseline" value=""/>
+	<property name="policy" value=""/>
+	
+	<target name="deploy-ruleapp">
+		<ruleappDeploy server="${server.url}" datasource="${datasourceName}" 
+			user="${rtsAdmin.login}" password="${rtsAdmin.password}" 
+			resUrl="${resUrl}" 
+			resUser="${resUser}" resPassword="${resPwd}" 
+			ruleapp="${ruleapp}"
+			baseline="${baseline}"
+			policy="${policy}"/>
+	</target>
+	
+	<target name="redeploy-ruleapp">
+		<ruleappDeploy server="${server.url}" datasource="${datasourceName}" 
+			user="${rtsAdmin.login}" password="${rtsAdmin.password}" 
+			resUrl="${resUrl}" 
+			resUser="${resUser}" resPassword="${resPwd}" 
+			ruleapp="${ruleapp}" 
+			mode="redeploy"
+			policy="${policy}"
+			baseline="${baseline}"/>
+	</target>
+	
+	<target name="extract-ruleapp">
+		<ruleappExtract server="${server.url}" datasource="${datasourceName}" 
+			user="${rtsAdmin.login}" password="${rtsAdmin.password}" 
+			ruleapp="${ruleapp}" 
+			baseline="${baseline}"
+			fromBaseline="${fromBaseline}"/>
+	</target>
+</project>
